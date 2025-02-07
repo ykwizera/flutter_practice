@@ -65,44 +65,92 @@ class ProductListPage extends StatelessWidget {
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: product['color'],
-                child: Text(
-                  product['name'][0],
-                  style: TextStyle(color: Colors.white),
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExpandedProductPage(product: product),
                 ),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
-              title: Text(product['name'], style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(product['description']),
-                  Row(
-                    children: List.generate(
-                      5,
-                      (starIndex) => Icon(
-                        Icons.star,
-                        color: starIndex < product['rating'].round()
-                            ? Colors.amber
-                            : Colors.grey,
-                        size: 16,
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: product['color'],
+                        borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          product['name'],
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.horizontal(right: Radius.circular(12)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product['description'],
+                            style: TextStyle(color: Colors.black87),
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: List.generate(
+                              5,
+                              (starIndex) => Icon(
+                                Icons.star,
+                                color: starIndex < product['rating'].round()
+                                    ? Colors.amber
+                                    : Colors.grey,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Price: \$${product['price']}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-              trailing: Text('Price: \$${product['price']}'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProductDetailsPage(product: product),
-                  ),
-                );
-              },
             ),
           );
         },
@@ -111,10 +159,10 @@ class ProductListPage extends StatelessWidget {
   }
 }
 
-class ProductDetailsPage extends StatelessWidget {
+class ExpandedProductPage extends StatelessWidget {
   final Map<String, dynamic> product;
 
-  ProductDetailsPage({required this.product});
+  ExpandedProductPage({required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -122,26 +170,47 @@ class ProductDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(product['name']),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              product['name'],
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            // Product Name with Background Color
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              decoration: BoxDecoration(
+                color: product['color'],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  product['name'],
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 16),
+
+            // Product Description
             Text(
               product['description'],
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(fontSize: 18, color: Colors.black87),
             ),
             SizedBox(height: 16),
+
+            // Product Price
             Text(
               'Price: \$${product['price']}',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: Colors.black87),
             ),
             SizedBox(height: 16),
+
+            // Product Rating
             Row(
               children: List.generate(
                 5,
@@ -154,6 +223,7 @@ class ProductDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 16),
           ],
         ),
       ),
